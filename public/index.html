@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+</head>
+<style>
+.slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+</style>
+<body onload="showinit()">
+    <div class="container">
+        <h1>首頁</h1>
+			<p>冷氣開關：</p>
+			<select id="airOn">
+				<option value="0">關</option>
+				<option value="1">開</option>
+			</select>
+			<p>模式：</p>
+			<select id="airMode">
+				<option value="0">冷氣</option>
+				<option value="1">除濕</option>
+				<option value="2">送風</option>
+			</select>
+			<p>溫度：</p><p id="demo"></p>
+			<div class="slidecontainer">
+				<input type="range" min="16" max="30" value="29" class="slider" id="temperature">
+			</div>
+			<p>風扇開關：</p>
+			<select id="fanOn">
+				<option value="0">關</option>
+				<option value="1">開</option>
+			</select>
+			<input type='button' onclick='UpdateStatus()' value='Status Update'>
+    </div>
+</body>
+</html>
+<script>
+	var slider = document.getElementById("temperature");
+	var output = document.getElementById("demo");
+	output.innerHTML = slider.value; // Display the default slider value
+
+	// Update the current slider value (each time you drag the slider handle)
+	slider.oninput = function() {
+	  output.innerHTML = this.value;
+	}
+	
+	function showinit(){
+		$.get("/getdata", function(data){
+		  console.log("初始",data);
+		  document.getElementById("airOn").value = data.airOn||0;
+		  document.getElementById("airMode").value = data.airMode||0;
+		  document.getElementById("temperature").value = data.temperature||30;
+		  document.getElementById("fanOn").value = data.fanOn||0;
+		  output.innerHTML = data.temperature||30;
+		});
+	}
+	
+	function UpdateStatus(){
+		var airOn = $("#airOn").val();
+		var airMode = $("#airMode").val();
+		var temperature = $("#temperature").val();
+		var fanOn = $("#fanOn").val();
+		console.log('to send',airOn,airMode, temperature, fanOn)
+		$.ajax({
+			type: "post",
+			url: "/chdb",
+			dataType: "json",
+			data:{"airMode":airMode, "airOn":airOn, "temperature":temperature, "fanOn":fanOn},
+			success: function(data){
+			//接受返回的数据，前端判断采取的动作
+			//console.log(data);
+			if(data){
+				if(data.message==true){
+				alert('儲存成功');
+				//window.location.href="#";
+				}else{
+				alert('儲存失敗');
+				//window.location.href="http://localhost:1993";
+				}
+			}
+			}
+		});
+	}	
+</script>
