@@ -63,16 +63,16 @@ app.post('/chdb', function (req, res) {
 
 app.post('/ifttt', function(req, res){
 	var toCh = {};
-	if(req.query.airOn !== undefined) toCh.airOn = req.body.airOn;
-	if(req.query.airMode !== undefined) toCh.airMode = req.body.airMode;
-	if(req.query.temperature !== undefined) toCh.temperature = req.body.temperature;
-	if(req.query.fanON !== undefined) toCh.fanON = req.body.fanON;
+	if(req.body.airOn !== undefined) toCh.airOn = req.body.airOn;
+	if(req.body.airMode !== undefined) toCh.airMode = req.body.airMode;
+	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
+	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
 	console.log('toCh',req.body,toCh);
 	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,res){
 		if (err) throw err;
 		airSchema.find({ID:'123'}, function(err,obj){
 			console.log('toSend',obj[0]);
-			res.sned({})
+			res.send({})
 			//io.emit('on',obj[0]);
 		})
 	});
