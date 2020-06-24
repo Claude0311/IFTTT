@@ -73,14 +73,14 @@ app.post('/ifttt', function(req, res){
 		airSchema.find({ID:'123'}, function(err,obj){
 			console.log('toSend',obj[0]);
 			res.send({})
-			//io.emit('on',obj[0]);
+			io.emit('on',obj[0]);
 		})
 	});
 	
 })
 
 
-/*io.on('connection', function(socket){
+io.on('connection', function(socket){
   console.log('a user connected');
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
@@ -90,7 +90,7 @@ app.post('/ifttt', function(req, res){
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
-});*/
+});
 
 var server = app.listen(process.env.PORT||3000,function(){
     console.log('server connect');
