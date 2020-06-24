@@ -67,9 +67,9 @@ app.post('/ifttt', function(req, res){
 	if(req.query.airMode !== undefined) toCh.airMode = req.query.airMode;
 	if(req.query.temperature !== undefined) toCh.temperature = req.query.temperature;
 	if(req.query.fanON !== undefined) toCh.fanON = req.query.fanON;
-	Schema.updateOne({ID:'123'},{$set:toCh},function(err,res){
+	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,res){
 		if (err) throw err;
-		Schema.find({ID:'123'}, function(err,obj){
+		airSchema.find({ID:'123'}, function(err,obj){
 			io.emit('on',obj[0]);
 		})
 	});
