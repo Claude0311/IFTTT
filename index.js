@@ -1,32 +1,96 @@
-var io = require("socket.io");
-var express = require("express");
+var express = require('express');
 var app = express();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+var bodyParser = require('body-parser');
+
+//基本設定
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json())
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+})
+app.get('/',function(req,res){
+    res.render('index',__dirname+"public/index.html")
+})
 
-app.post("/foo", function(req, res, next) {
-    io.sockets.emit("foo", req.body);
-    res.send({});
+//資料庫
+var airSchema = require('./schemas/air.js');
+
+//功能
+app.get('/getdata',function(req,res){
+	airSchema.find({ID:'123'},function(err,obj){
+		if(err) return concole.log(err)
+		res.json(obj[0]);
+	})
+})
+
+app.post('/chdb', function (req, res) {
+	var airOn = req.body.airOn;
+	var airMode = req.body.airMode;
+	var temperature = req.body.temperature;
+	var fanON = req.body.fanOn;
+	console.log(airOn,airMode,temperature, fanON)
+	airSchema.find({ID:'123'},function(err,obj){
+		if (err) {
+            console.log("Error:" + err);
+        }else{
+			if(obj.length == 0){
+				var newMode = new airSchema({"ID":'123', "airOn":airOn, "temperature":temperature, "airMode":airMode, "fanON":fanON});
+				console.log(newMode);
+				newMode.save(function(err,response){
+					if(err){
+						console.log(err);
+					}
+					else{
+						console.log('成功儲存：',{ID:'123', "airOn":airOn, "airMode":airMode, "temperature":temperature, "fanON":fanON});
+						res.send({status:'success',message:true});
+				}});
+            }else{
+				console.log("更改資料");
+                airSchema.updateOne({ID:'123'},{$set:{"airOn":airOn, "airMode":airMode, "temperature":temperature, "fanON":fanON}},function(err,res){
+					if (err) throw err;
+				});
+				res.send({status:'success',message:true});
+			}
+		}
+	})
+	io.emit('on',{airOn:airOn, airMode:airMode, temperature:temperature, fanON:fanON});
 });
 
-var server = app.listen(process.env.PORT||1993, function(req, res) {
-  console.log("網站伺服器在1993埠口開工了！");
-});
+app.post('/ifttt', function(req, res){
+	var toCh = {};
+	if(req.query.airOn !== undefined) toCh.airOn = req.query.airOn;
+	if(req.query.airMode !== undefined) toCh.airMode = req.query.airMode;
+	if(req.query.temperature !== undefined) toCh.temperature = req.query.temperature;
+	if(req.query.fanON !== undefined) toCh.fanON = req.query.fanON;
+	Schema.updateOne({ID:'123'},{$set:toCh},function(err,res){
+		if (err) throw err;
+		Schema.find({ID:'123'}, function(err,obj){
+			io.emit('on',obj[0]);
+		})
+	});
+	
+})
 
 
-var sio = io(server);
- 
-sio.on('connection', function(socket){
-  console.log("Connected");
- 
-  // 接收'connection'事件訊息
-  socket.on('connection', function (data) {
-　　console.log('來自Arduino的訊息：' + data.msg);
+/*io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('chat message', function(msg){
+    console.log('message: ' + msg);
+	io.emit('chat message', msg);
+	io.emit('chat message', msg);
+  })
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
   });
- 
-  // 接收'atime'事件訊息
-  socket.on('atime', function (data) {
-　　console.log('來自Arduino的訊息：' + data.msg);
-　　// 發送時間資料給前端
-    socket.emit('atime', { 'time': new Date().toJSON() });
-  });
-});
+});*/
+
+var server = app.listen(process.env.PORT||3000,function(){
+    console.log('server connect');
+	console.log(DB_URL);
+	console.log(process.env.PORT||3000);
+})

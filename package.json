@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"dbstart": "sudo service mongodb start",
+	"start": "npm run dbstart && node index.js"
   },
   "author": "",
   "license": "ISC"
