@@ -67,11 +67,12 @@ app.post('/ifttt', function(req, res){
 	if(req.query.airMode !== undefined) toCh.airMode = req.body.airMode;
 	if(req.query.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.query.fanON !== undefined) toCh.fanON = req.body.fanON;
-	console.log('toCh',req,toCh);
+	console.log('toCh',req.body,toCh);
 	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,res){
 		if (err) throw err;
 		airSchema.find({ID:'123'}, function(err,obj){
 			console.log('toSend',obj[0]);
+			res.sned({})
 			//io.emit('on',obj[0]);
 		})
 	});
