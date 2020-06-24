@@ -91,7 +91,7 @@
 		document.getElementById("airMode").value = data.airMode||0;
 		document.getElementById("temperature").value = data.temperature||30;
 		document.getElementById("fanOn").value = data.fanOn||0;
-		output.innerHTML = data.temperature||30;
+		document.getElementById("demo").innerHTML = data.temperature||30;
  	});
 	function showinit(){
 		$.get("/getdata", function(data){
@@ -100,7 +100,7 @@
 		  document.getElementById("airMode").value = data.airMode||0;
 		  document.getElementById("temperature").value = data.temperature||30;
 		  document.getElementById("fanOn").value = data.fanOn||0;
-		  output.innerHTML = data.temperature||30;
+		  document.getElementById("demo").innerHTML = data.temperature||30;
 		});
 	}
 	
