@@ -68,7 +68,7 @@ app.post('/ifttt', function(req, res){
 	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
 	console.log('toCh',req.body,toCh);
-	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,res){
+	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,response){
 		if (err) throw err;
 		airSchema.find({ID:'123'}, function(err,obj){
 			console.log('toSend',obj[0]);
