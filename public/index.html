@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    
+	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+    <script src='http://code.jquery.com/jquery-1.8.2.min.js'></script>
+
 </head>
 <style>
 .slidecontainer {
@@ -72,27 +73,29 @@
 			</select>
 			<input type='button' onclick='UpdateStatus()' value='Status Update'>
     </div>
-</body>
-</html>
-<script src='/socket.io/socket.io.js'></script>
+	<script src='/socket.io/socket.io.js'></script>
 <script>
-	var socket = io.connect();
+	var socket = io();//.connect("localhost", {port: 3000});
+	socket.on('on', function(data) {
+		console.log("更新",data);
+		document.getElementById("airOn").value = data.airOn||0;
+		document.getElementById("airMode").value = data.airMode||0;
+		document.getElementById("temperature").value = data.temperature||30;
+		document.getElementById("fanOn").value = data.fanOn||0;
+		document.getElementById("demo").innerHTML = data.temperature||30;
+	});
+</script>
+<script>
 	var slider = document.getElementById("temperature");
 	var output = document.getElementById("demo");
 	output.innerHTML = slider.value; // Display the default slider value
 
 	// Update the current slider value (each time you drag the slider handle)
-	slider.oninput = function() {
-	  output.innerHTML = this.value;
+	document.getElementById("temperature").oninput = function() {
+	  document.getElementById("demo").innerHTML = this.value;
 	}
-	socket.on('on', function(data) {
- 		console.log("更新",data);
- 		document.getElementById("airOn").value = data.airOn||0;
-		document.getElementById("airMode").value = data.airMode||0;
-		document.getElementById("temperature").value = data.temperature||30;
-		document.getElementById("fanOn").value = data.fanOn||0;
-		document.getElementById("demo").innerHTML = data.temperature||30;
- 	});
+	
+	
 	function showinit(){
 		$.get("/getdata", function(data){
 		  console.log("初始",data);
@@ -131,3 +134,5 @@
 		});
 	}	
 </script>
+</body>
+</html>

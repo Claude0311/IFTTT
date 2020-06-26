@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+var io = require("socket.io").listen(http);
 var bodyParser = require('body-parser');
 
 //基本設定
@@ -47,6 +47,7 @@ app.post('/chdb', function (req, res) {
 					}
 					else{
 						console.log('成功儲存：',{ID:'123', "airOn":airOn, "airMode":airMode, "temperature":temperature, "fanON":fanON});
+						io.emit('on',{airOn:airOn, airMode:airMode, temperature:temperature, fanON:fanON});
 						res.send({status:'success',message:true});
 				}});
             }else{
@@ -54,11 +55,12 @@ app.post('/chdb', function (req, res) {
                 airSchema.updateOne({ID:'123'},{$set:{"airOn":airOn, "airMode":airMode, "temperature":temperature, "fanON":fanON}},function(err,res){
 					if (err) throw err;
 				});
+				io.emit('on',{airOn:airOn, airMode:airMode, temperature:temperature, fanON:fanON});
 				res.send({status:'success',message:true});
 			}
 		}
 	})
-	io.emit('on',{airOn:airOn, airMode:airMode, temperature:temperature, fanON:fanON});
+	
 });
 
 app.post('/ifttt', function(req, res){
@@ -72,8 +74,8 @@ app.post('/ifttt', function(req, res){
 		if (err) throw err;
 		airSchema.find({ID:'123'}, function(err,obj){
 			console.log('toSend',obj[0]);
-			res.send({})
 			io.emit('on',obj[0]);
+			res.send({})
 		})
 	});
 	
@@ -88,14 +90,14 @@ io.on('connection', function(socket){
 	io.emit('chat message', msg);
   })
   socket.on('atime', function(msg){
-    console.log('message: ' + msg);
+    console.log('message: ' + msg); 
   })
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
 });
 
-var server = app.listen(process.env.PORT||3000,function(){
+var server = http.listen(process.env.PORT||3000,function(){
     console.log('server connect');
 	console.log(DB_URL);
 	console.log(process.env.PORT||3000);
