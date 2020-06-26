@@ -69,8 +69,8 @@ app.post('/ifttt', function(req, res){
 	if(req.body.airMode !== undefined) toCh.airMode = req.body.airMode;
 	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
-	if(toCh.airMode === "+1" || toCh.airMode === "-1" ){
-		const toAdd = (toCh.airMode === "+1")?1:(-1)
+	if(toCh.airMode === "higher" || toCh.airMode === "lower" ){
+		const toAdd = (toCh.airMode === "higher" )?1:(-1)
 		airSchema.updateOne({ID:'123'},{$inc:{temperature:toAdd}},function(err,response){
 			if (err) throw err;
 			airSchema.find({ID:'123'}, function(err,obj){
