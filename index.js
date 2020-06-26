@@ -65,12 +65,12 @@ app.post('/chdb', function (req, res) {
 
 app.post('/ifttt', function(req, res){
 	var toCh = {};
-	if(req.body.airOn !== undefined) toCh.airOn = req.body.airOn;
-	if(req.body.airMode !== undefined) toCh.airMode = req.body.airMode;
+	if(typeof req.body.airOn === "number") toCh.airOn = req.body.airOn;
+	if(typereq.body.airMode !== undefined) toCh.airMode = req.body.airMode;
 	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
 	console.log("tmeperature",toCh.temperature)
-	if(toCh.temperature === "higher" || toCh.temperature === "lower" ){
+	if(typeof toCh.temperature === "string"){
 		const toAdd = (toCh.temperature === "higher" )?1:(-1)
 		airSchema.updateOne({ID:'123'},{$inc:{temperature:toAdd}},function(err,response){
 			if (err) throw err;
