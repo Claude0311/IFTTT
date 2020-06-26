@@ -66,7 +66,7 @@ app.post('/chdb', function (req, res) {
 app.post('/ifttt', function(req, res){
 	var toCh = {};
 	if(typeof req.body.airOn === "number") toCh.airOn = req.body.airOn;
-	if(typereq.body.airMode !== undefined) toCh.airMode = req.body.airMode;
+	if(req.body.airMode !== undefined) toCh.airMode = req.body.airMode;
 	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
 	console.log("tmeperature",toCh.temperature)
