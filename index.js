@@ -69,16 +69,26 @@ app.post('/ifttt', function(req, res){
 	if(req.body.airMode !== undefined) toCh.airMode = req.body.airMode;
 	if(req.body.temperature !== undefined) toCh.temperature = req.body.temperature;
 	if(req.body.fanON !== undefined) toCh.fanON = req.body.fanON;
-	console.log('toCh',req.body,toCh);
-	airSchema.updateOne({ID:'123'},{$set:toCh},function(err,response){
-		if (err) throw err;
-		airSchema.find({ID:'123'}, function(err,obj){
-			console.log('toSend',obj[0]);
-			io.emit('on',obj[0]);
-			res.send({})
-		})
-	});
-	
+	if(toCh.airMode === "+1" || toCh.airMode === "-1" ){
+		const toAdd = (toCh.airMode === "+1")?1:(-1)
+		airSchema.updateOne({ID:'123'},{$inc:{temperature:toAdd}},function(err,response){
+			if (err) throw err;
+			airSchema.find({ID:'123'}, function(err,obj){
+				console.log('toSend',obj[0]);
+				io.emit('on',obj[0]);
+				res.send({})
+			})
+		});
+	}else{
+		airSchema.updateOne({ID:'123'},{$set:toCh},function(err,response){
+			if (err) throw err;
+			airSchema.find({ID:'123'}, function(err,obj){
+				console.log('toSend',obj[0]);
+				io.emit('on',obj[0]);
+				res.send({})
+			})
+		});
+	}
 })
 
 
